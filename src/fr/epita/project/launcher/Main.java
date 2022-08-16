@@ -11,9 +11,14 @@ import static fr.epita.project.services.SeedDB.runSeed;
 import static fr.epita.project.services.Utilities.logMessage;
 
 
-
 //this is an entirely console based quiz application. questions and usage rules
 //are stated explicity in the console also
+
+/**
+ * @param - admin username = admin
+ * @param - admin password = admin
+ */
+
 public class Main {
     public static void main(String[] args) throws SQLException, FileNotFoundException {
         Scanner scanner = new Scanner(System.in);

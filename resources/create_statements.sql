@@ -23,14 +23,14 @@ CREATE TABLE IF NOT EXISTS Answers (
   answers text[],
   question_id integer,
   FOREIGN KEY ( id ) REFERENCES students(id),
-  FOREIGN KEY ( question_id ) REFERENCES Questions(id)
+  FOREIGN KEY ( question_id ) REFERENCES Questions(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Mcq_questions (
   question_id serial PRIMARY KEY,
   answers varchar(255),
   options text[],
-  FOREIGN KEY ( question_id ) REFERENCES Questions(id)
+  FOREIGN KEY ( question_id ) REFERENCES Questions(id) ON DELETE CASCADE
 );
 
 
@@ -39,21 +39,20 @@ CREATE TABLE IF NOT EXISTS Aso_questions (
   question_id integer,
   answers varchar(255),
   pair VARCHAR(1024),
-  FOREIGN KEY ( question_id ) REFERENCES Questions(id)
+  FOREIGN KEY ( question_id ) REFERENCES Questions(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS open_questions (
   question_id integer,
   answers varchar(1024),
-  FOREIGN KEY ( question_id ) REFERENCES Questions(id)
+  FOREIGN KEY ( question_id ) REFERENCES Questions(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS merged_questions (
   question_id serial PRIMARY KEY,
   answers varchar(1024),
   pair VARCHAR(1024),
-  options VARCHAR(1024),
-  FOREIGN KEY ( question_id ) REFERENCES Questions(id)
+  options VARCHAR(1024)
 );
 
 

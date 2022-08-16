@@ -61,10 +61,10 @@ public class Authenticate {
                             logMessage("What is the id of the question you want to update");
                             int question_id = Integer.parseInt(getInput(scanner));
 
-                            logMessage("What parameter would you like to update (e.g: difficulty, question_type (i.e: mcq, open_question, associative");
-                            String question_type = getInput(scanner);
+                            logMessage("Whats the new difficulty you want to set e.g (1, 2, 3)");
+                            int new_difficulty = Integer.parseInt(getInput(scanner));
 
-                            AdminDao.updateAQuestion(question_id,question_type );
+                            AdminDao.updateQuestionDifficulty(question_id, new_difficulty);
                             logMessage("...........Successfully deleted ✅..................");
                         }
 
@@ -72,7 +72,7 @@ public class Authenticate {
                             logMessage("What is the id of the question you want to delete");
                             int question_id = Integer.parseInt(getInput(scanner));
                             AdminDao.deleteAQuestion(question_id);
-                            logMessage("...........Successfully deleted ✅..................");
+                            logMessage("...........Successfully Updated ✅..................");
                         }
                     }
 

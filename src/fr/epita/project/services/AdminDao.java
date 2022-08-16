@@ -105,29 +105,63 @@ public class AdminDao {
 
     public static void deleteAQuestion(int question_id) throws SQLException, FileNotFoundException {
         Connection connection = connectToDb();
-        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM questions WHERE id = ?");
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM questions WHERE id = ? ");
         preparedStatement.setInt(1, question_id);
-        preparedStatement.executeQuery();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<String> data = new ArrayList<>();
+        while (resultSet.next()) {
+            String type = resultSet.getString("question_type");
+            data.add(type);
+            if (type.equals("mcq")) {
+                try {
+                    PreparedStatement prepared = connection.prepareStatement("DELETE FROM mcq_questions WHERE question_id = ?");
+                    prepared.setInt(1, question_id);
+                    prepared.executeUpdate();
+                } catch (SQLException se) {
+                    System.out.println(se.getErrorCode());
+                } finally {
+                    try {
+                        finalDeletion(question_id, connection);
+                    } catch (SQLException ex) {
+                        System.out.println(ex.toString());
+                    }
+                }
+            }
+
+            if (type.equals("open_question")) {
+                try {
+                    PreparedStatement prepared = connection.prepareStatement("DELETE FROM open_questions WHERE question_id = ?");
+                    prepared.setInt(1, question_id);
+                    prepared.executeUpdate();
+                } catch (SQLException se) {
+                    System.out.println(se.getErrorCode());
+                } finally {
+                    try {
+                        finalDeletion(question_id, connection);
+                    } catch (SQLException ex) {
+                        System.out.println(ex.toString());
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    private static void finalDeletion(int question_id, Connection connection) throws SQLException {
+        //delete from questions table
+        PreparedStatement preparedStatementFinal = connection.prepareStatement("DELETE FROM questions WHERE id = ?");
+        preparedStatementFinal.setInt(1, question_id);
+        preparedStatementFinal.executeUpdate();
         connection.close();
     }
 
-    public static void updateAQuestion(int question_id, String parameter) throws SQLException, FileNotFoundException {
+    public static void updateQuestionDifficulty(int question_id, int new_difficulty) throws SQLException, FileNotFoundException {
         Connection connection = connectToDb();
-        if (parameter.equals("difficulty")) {
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE questions SET difficulty = ? WHERE id = ? ");
-            preparedStatement.setString(1, parameter);
-            preparedStatement.setInt(2, question_id);
-            preparedStatement.executeQuery();
-            connection.close();
-        }
-
-        if (parameter.equals("question_type")) {
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE questions SET question_type = ? WHERE id = ? ");
-            preparedStatement.setString(1, parameter);
-            preparedStatement.setInt(2, question_id);
-            preparedStatement.executeQuery();
-            connection.close();
-        }
-
+        PreparedStatement preparedStatement = connection.prepareStatement("UPDATE questions SET difficulty = ? WHERE id = ? ");
+        preparedStatement.setInt(1, new_difficulty);
+        preparedStatement.setInt(2, question_id);
+        preparedStatement.executeUpdate();
+        connection.close();
     }
 }
