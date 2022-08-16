@@ -31,11 +31,10 @@ public class TestStudentQuiz {
 
         if (isEmpty) {
             logMessage("Hi" + " " + name_input + "\n" + "We couldn't find you in our Database ☹️");
-            logMessage("Would you like to create and account 😬");
+            logMessage("Would you like to create an account 😬");
             logMessage("yes or no");
             String create_account = getInput(scanner);
             logMessage(".............................\n");
-
             if (create_account.equals("yes")) {
                 logMessage("please type in a chosen username 😌");
                 String user_name = getInput(scanner);
@@ -56,18 +55,12 @@ public class TestStudentQuiz {
 
     private static void processQuiz(Scanner scanner, List<Student> student_data) throws SQLException {
         String difficulty_level;
-        int current_student_id;
-        int student_score = 0;
         String topic;
-        String current_student_name;
         int total_questions;
         String question_type;
         logMessage("Hi 👋🏽" + " " + student_data.get(0).getName());
         logMessage("..... Lets get QUIZZINGG 🧠 .....");
         logMessage("......................................\n");
-//        current_student_name = student_data.get(0).getName();
-//        current_student_id = student_data.get(0).getId();
-
         logMessage("What difficulty level do you want? ( 1, 2 or 3 ) \n");
         difficulty_level = getInput(scanner);
         if (!difficulty_level.matches("1|2|3")) {
@@ -84,14 +77,12 @@ public class TestStudentQuiz {
         }
 
 
-        logMessage("What question type are you interested in ( mcq or associative or open_question ) \n......................................");
+        logMessage("What question type are you interested in ( mcq or open_question or associative ) \n......................................");
         question_type = getInput(scanner);
         if (!question_type.matches("mcq|associative|open_question")) {
             logMessage("...........Invalid Option selected ❌..................");
             System.exit(0);
         }
-
-        System.out.println(student_score);
 
 
         //get question from db
@@ -102,34 +93,35 @@ public class TestStudentQuiz {
             logMessage("Type in the correct answer from the list of options: | \n Valid answers are a, b or c. ONLY!!!\n");
         }
 
+        int student_score = 0;
         for (Question q : students_questions) {
             int question_id = q.getId();
-
             //if question type is mcq
             if (question_type.matches("mcq")) {
-                handleMCQQuestions(scanner, student_score, q, question_id);
+                String status = handleMCQQuestions(scanner, q, question_id);
+                if (status.equals("correct")) {
+                    student_score++;
+                }
             }
-
             //checking if the question is an open question
             if (question_type.matches("open_question")) {
-                handleOpenQuestions(scanner, student_score, q, question_id);
+                String status = handleOpenQuestions(scanner, q, question_id);
+                if (status.equals("correct")) {
+                    student_score++;
+                }
             }
-
         }
         logMessage(".............................\n");
-        logMessage(String.valueOf("Your SCORE:👨🏽‍🏫.....:" + student_score + "/" + total_questions));
+        logMessage("Your SCORE:👨🏽‍🏫.....:" + student_score + "/" + total_questions);
         System.exit(0);
-
-
     }
 
-    private static void handleMCQQuestions(Scanner scanner, int student_score, Question q, int question_id) throws SQLException {
+    private static String handleMCQQuestions(Scanner scanner, Question q, int question_id) throws SQLException {
         List<MCQQuestion> answer_options = QuestionDao.getMCQQuestion(question_id);
-
         String ques = q.getQuestion();
         String answer = answer_options.get(0).getAnswer();
         String[] options = answer_options.get(0).getOptions();
-
+        String tracker = "";
         logMessage("...........Preparing Question 𝌗 𝌗 𝌗 𝌗 𝌗..................\n");
         logMessage("QUESTION:" + ques);
         logMessage("ANSWER:" + answer);
@@ -137,31 +129,30 @@ public class TestStudentQuiz {
         for (String a : options) {
             logMessage(a);
         }
-//                            logMessage("ANSWER:" + answer);
         logMessage("...........waiting for answer 𝌗 𝌗 𝌗 𝌗 𝌗..................\n");
-        String get_answer = scanner.nextLine();
-        if (answer.equals(get_answer)) {
-            student_score++;
+        String get_answer = getInput(scanner);
+        if (answer.matches(get_answer)) {
+            tracker = "correct";
+        } else {
+            tracker = "wrong";
         }
-
-        logMessage(String.valueOf(student_score));
-
+        return tracker;
     }
 
-    private static void handleOpenQuestions(Scanner scanner, int student_score, Question q, int question_id) throws SQLException {
+    private static String handleOpenQuestions(Scanner scanner, Question q, int question_id) throws SQLException {
         List<OpenQuestion> answers = QuestionDao.getOpenQuestion(question_id);
-
+        String tracker = "";
         String ques = q.getQuestion();
         String answer = answers.get(0).getAnswer();
-        logMessage("ANSWER:" + answer);
         logMessage("...........Preparing Question 𝌗 𝌗 𝌗 𝌗 𝌗..................\n");
         logMessage("QUESTION:" + ques);
         logMessage("...........waiting for answer 𝌗 𝌗 𝌗 𝌗 𝌗..................\n");
-        String get_answer = scanner.nextLine();
-        if (answer.equals(get_answer)) {
-            student_score++;
-            System.out.println("output:" + student_score);
-
+        String get_answer = getInput(scanner);
+        if (answer.matches(get_answer)) {
+            tracker = "correct";
+        } else {
+            tracker = "wrong";
         }
+        return tracker;
     }
 }
